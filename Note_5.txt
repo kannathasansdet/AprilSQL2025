@@ -1,0 +1,219 @@
+SELECT * FROM transactions;
+
+DROP TABLE transactions;
+
+TRUNCATE TABLE transactions;
+
+DELETE FROM transactions where product_name ='idly';
+
+SELECT *
+FROM transactions
+WHERE transaction_id = (
+  SELECT count(transaction_id) FROM transactions
+);
+
+SELECT name, price
+FROM fruits
+WHERE price > (SELECT AVG(price) FROM fruits);
+
+#Find the Most Expensive Fruit
+SELECT name, price
+FROM fruits
+WHERE price = (SELECT MAX(price) FROM fruits);
+
+#Find Fruits of the Same Color as a Specific Fruit
+
+SELECT name, color
+FROM fruits
+WHERE color = (SELECT color FROM fruits WHERE name = 'Apple');
+
+#Find Fruits Cheaper Than Grapes
+
+SELECT name, price
+FROM fruit
+WHERE price < (SELECT price FROM fruit WHERE name = 'Grapes');
+
+-- CASE condition with ELSE clause in SQL 
+
+SELECT transaction_id, product_name,
+CASE
+    WHEN product_name = 'IDLY' THEN 'Made in INDIA'
+    WHEN product_name = 'SOAP' THEN 'Made in  United Kingdom'
+    ELSE 'Unknown Country'
+END AS country_name
+FROM transactions;
+
+SELECT name, price,
+       CASE
+           WHEN price < 100 THEN 'Cheap'
+           WHEN price BETWEEN 100 AND 150 THEN 'Moderate'
+           ELSE 'Expensive'
+       END AS PriceCategory
+FROM fruits;
+
+
+SELECT name, color,
+       CASE
+           WHEN color = 'Red' THEN 'Highlight'
+           ELSE 'Regular'
+       END AS FruitCategory
+FROM fruits;
+
+
+SELECT name, price,
+       CASE
+           WHEN price > 150 THEN price * 0.90
+           WHEN price BETWEEN 100 AND 150 THEN price * 0.95
+           ELSE price
+       END AS DiscountedPrice
+FROM fruits;
+
+
+CREATE TABLE fruit (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(50) NOT NULL,
+    color VARCHAR(50) NOT NULL
+);
+
+
+INSERT INTO fruit (name, color) 
+VALUES 
+('Apple', 'Red'),
+('Banana', 'Yellow'),
+('Cherry', 'Red'),
+('Orange', 'Orange'),
+('Grapes', 'Green'),
+('Blueberry', 'Blue');
+
+SELECT * FROM fruits;
+
+SELECT color, COUNT(*) AS FruitCount
+FROM fruit
+GROUP BY color;
+
+SELECT color, COUNT(*) AS FruitCount
+FROM fruit
+GROUP BY color
+HAVING COUNT(*) > 1;
+
+CREATE TABLE fruits (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(50) NOT NULL,
+    color VARCHAR(50) NOT NULL,
+    price DECIMAL(10, 2) NOT NULL
+);
+
+
+INSERT INTO fruits (name, color, price)
+VALUES
+('Apple', 'Red', 100),
+('Banana', 'Yellow', 50),
+('Cherry', 'Red', 150),
+('Orange', 'Orange', 80),
+('Grapes', 'Green', 120),
+('Blueberry', 'Blue', 200);
+
+SELECT color, SUM(price) AS TotalPrice
+FROM fruits
+GROUP BY color WITH ROLLUP;
+
+SELECT * FROM fruits;
+
+
+
+#String functions
+
+SELECT REPLACE(name, 'Banana' ,'Red Banana') AS FruitName
+FROM fruits;
+
+SELECT
+    REPLACE(REPLACE(last_name, 'Doe', 'Smith'), 'Robinson', 'Johnson')
+    AS updated_last_name
+FROM Customers;
+
+SELECT REPLACE(item, 'Keyboard', 'Wireless Keyboard') AS updated_item
+FROM Orders
+WHERE amount < 500;
+
+UPDATE Shippings
+SET status = REPLACE(status, 'Pending', 'In Transit')
+WHERE customer IN (4, 5);
+
+SELECT
+  SUBSTRING('dqaspothubID', 4, 4) result;
+  
+  SELECT
+  LENGTH('dqaspothubID') string_length;
+  
+  SELECT
+  POSITION('SQL' IN 'SQL will, SQL will rock you!') AS sql_position;
+  
+  SELECT
+  POSITION('We' IN 'SQL will, SQL will rock you!') AS result;
+  
+  SELECT
+  TRIM(
+    LEADING '*'
+    FROM
+      '***SQL**'
+  ) result;
+  
+   
+  SELECT TRIM(
+    LEADING 'S'
+    FROM
+      'SSSTQL**'
+  ) result;
+  
+  
+  SELECT
+  TRIM(
+    TRAILING '*'
+    FROM
+      '***SQL**'
+  ) result;
+  
+  SELECT
+  TRIM(
+    BOTH '*'
+    FROM
+      '***SQL**'
+  ) result;
+  
+  SELECT
+  TRIM(
+    LEADING '0'
+    FROM
+      '00001900'
+  ) result;
+  
+  SELECT
+  last_name,
+  LEFT(last_name, 1) AS initial
+FROM
+  employees
+ORDER BY
+  last_name;
+  
+  
+  
+  SELECT
+  RIGHT('resume.pdf', 3) extension;
+  
+  ##MATH FUNCTIONS
+  
+  SELECT ABS(-100) as PositiveNumber;
+  
+  SELECT POWER(10,2);
+  
+  SELECT ROUND(100.19,1);
+  
+  SELECT SQRT (100) result;
+    
+  SELECT TRUNCATE(123.4567,2) result;
+  
+  SELECT TRUNCATE(123.4567,-2) result;
+
+SELECT TRUNCATE(123.4567, 0) AS result;
+
+SELECT TRUNCATE(12345.6789, -3) AS result;

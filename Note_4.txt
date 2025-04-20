@@ -1,0 +1,327 @@
+#Functions in SQL
+
+CREATE database SQLFunctions;
+
+USE SQLFunctions;
+
+CREATE TABLE transactions(
+transaction_id INT,
+product_name VARCHAR(200),
+transaction_amount DECIMAL (5,2)
+);
+
+INSERT INTO transactions
+VALUES(1,"SOAP",50.00),
+(2,"Coffee",150.00),
+(3,"tea",250.00),
+(4,"dosa",350.00),
+(5,"idly",450.00);
+
+SELECT transaction_id AS ID , product_name FROM transactions;
+
+SELECT * FROM transactions;
+
+SELECT COUNT(transaction_amount)
+FROM transactions;
+
+SELECT COUNT(transaction_amount) AS Transaction_Count
+FROM transactions;
+
+SELECT COUNT(transaction_amount) AS "Today transaction"
+FROM transactions;
+
+SELECT MAX(transaction_amount) AS Maximum_Transaction_amount
+FROM transactions;
+
+SELECT MIN(transaction_amount) AS Minimum_Transaction_amount
+FROM transactions;
+
+SELECT SUM(transaction_amount) AS Sum
+FROM transactions;
+
+SELECT AVG(transaction_amount) AS average
+FROM transactions;
+
+SELECT LOWER(product_name) AS Product_name_Lower
+FROM transactions;
+
+SELECT UPPER(product_name) AS Product_name_Lower
+FROM transactions;
+
+INSERT INTO transactions (product_name)
+VALUES (CONCAT(UPPER(LEFT('john', 1)), LOWER(SUBSTRING('john', 2))));
+
+INSERT INTO employee (first_name, hire_date)
+VALUES ('Jane', STR_TO_DATE('15/04/2025', '%d/%m/%Y'));
+
+CREATE TABLE Colleges (
+  college_id INT NOT NULL,
+  college_code VARCHAR(20),
+  college_name VARCHAR(50)
+);
+
+INSERT INTO Colleges
+(college_id, college_code, college_name)
+VALUES 
+('01', 'COLL001', 'SVCET'),
+('02', 'COLL002', 'AnnaUniv'),
+('03', 'COLL003', 'MadrasUnvi');
+
+SELECT * FROM Colleges;
+
+SELECT CONCAT(college_code,college_name) AS Full_College_name
+FROM Colleges;
+
+
+SELECT CONCAT(college_code," ",college_name) AS Full_Name
+FROM Colleges;
+
+DROP TABLE Colleges;
+
+#WILDCARDS
+
+SELECT * FROM Colleges
+WHERE college_name="A";
+
+SELECT * FROM Colleges
+WHERE college_name LIKE "A%";
+
+SELECT * FROM Colleges
+WHERE college_name  LIKE "%v";
+
+SELECT * FROM Colleges
+WHERE college_name  LIKE "Ma%";
+
+SELECT * FROM Colleges
+WHERE college_name  LIKE "_adrasUnvi";
+
+SELECT * FROM Colleges
+WHERE college_name  LIKE "_VCE_";
+
+SELECT * FROM Colleges
+WHERE college_name  LIKE "_V%";
+
+SELECT * FROM Colleges
+WHERE college_name  LIKE "%_T";
+
+CREATE TABLE employee (
+    first_name VARCHAR(50) NOT NULL,
+    last_name VARCHAR(50) NOT NULL,
+    salary DECIMAL(10, 2) NOT NULL,
+    hire_date DATE NOT NULL,
+    job_id VARCHAR(10) NOT NULL UNIQUE,
+    joined_month VARCHAR(20) NOT NULL
+);
+
+INSERT INTO employee (first_name, last_name, salary, hire_date, job_id, joined_month)
+VALUES 
+('John', 'Doe', 45000, '2025-04-01', 'DEV001', 'April'),
+('Jane', 'Smith', 55000, '2025-03-15', 'QA002', 'March'),
+('Emily', 'Brown', 60000, '2025-05-10', 'PM003', 'May'),
+('Michael', 'Johnson', 50000, '2025-02-20', 'HR004', 'February'),
+('Chris', 'Taylor', 48000, '2025-06-01', 'SUP005', 'June');
+
+SELECT * FROM employee;
+
+INSERT INTO employee (first_name, last_name, salary, hire_date, job_id, joined_month)
+VALUES ('Jane','r',58000, STR_TO_DATE('15/04/2025', '%d/%m/%Y'),'DEV008', 'April');
+
+SELECT
+  first_name,
+  last_name
+FROM
+  employee
+WHERE
+  first_name LIKE 'J%'
+ORDER BY
+  first_name;
+  
+SELECT
+  first_name,
+  last_name
+FROM
+  employee
+WHERE
+  first_name LIKE 'J%'
+  AND first_name NOT LIKE 'Em%'
+ORDER BY
+  first_name;
+  
+SELECT
+  first_name,
+  last_name,
+  job_id
+FROM
+  employee
+WHERE
+  NOT (
+    job_id = "DEV001"
+    OR job_id = "HR004"
+  );
+  
+#ORDER BY Clause
+
+SELECT * FROM Colleges
+ORDER BY college_id;
+
+SELECT * FROM Colleges
+ORDER BY college_id DESC;
+
+SELECT * FROM Colleges
+ORDER BY College_name ASC;
+
+SELECT * FROM Colleges
+ORDER BY College_name,College_code;
+
+SELECT
+  first_name,
+  last_name,
+  salary
+FROM
+  employee
+WHERE
+  salary > 14000
+ORDER BY
+  salary DESC;
+  
+SELECT
+  first_name,
+  last_name,
+  hire_date
+FROM
+  employee
+WHERE
+  hire_date >= '2025-03-15'
+ORDER BY
+  hire_date DESC;
+  
+SELECT
+  first_name,
+  last_name,
+  hire_date
+FROM
+  employee
+WHERE
+  EXTRACT(year from hire_date) >= 1998
+  AND EXTRACT(year from hire_date) <= 2024
+ORDER BY hire_date;
+
+SELECT
+  first_name,
+  last_name,
+  job_id
+FROM
+  employee
+WHERE
+  job_id NOT IN ("HR004", "QA002")
+ORDER BY
+  job_id;
+  
+  
+  SELECT
+  first_name,
+  last_name, 
+  hire_date,
+  EXTRACT(MONTH FROM hire_date) joined_month
+FROM
+  employee
+WHERE
+  EXTRACT(MONTH FROM hire_date) IN (1, 2, 3)
+ORDER BY 
+  joined_month;
+  
+#DISTINCT operator to remove the duplicate values 
+
+SELECT * FROM employee;
+
+SELECT DISTINCT
+  salary
+FROM
+  employee
+ORDER BY
+  salary DESC;
+  
+  SELECT DISTINCT
+  job_id,
+  salary
+FROM
+  employee
+ORDER BY
+  job_id,
+  salary DESC;
+  
+#LIMIT Clause
+
+SELECT * FROM Colleges
+LIMIT 2;
+
+SELECT * FROM Colleges
+ORDER BY College_name DESC LIMIT 2;
+
+SELECT * FROM Colleges
+LIMIT 2,2;
+
+-- LIMIT 2 selects two results
+-- OFFSET 2 excludes the first three results
+
+SELECT first_name, last_name
+FROM Customers
+LIMIT 2 OFFSET 3;
+
+#(Offset)
+
+#UNION
+
+CREATE TABLE income(
+Income_name VARCHAR(200),
+amount DECIMAL (5,2)
+);
+
+
+INSERT INTO income
+VALUES("Kanna",50.00),
+("Hari",50.00),
+("Gaja",50.00),
+("Anu",50.00),
+("nagu",50.00);
+
+
+
+SELECT * FROM income;
+
+
+CREATE TABLE expenses(
+expenses_name VARCHAR(200),
+amount DECIMAL (5,2)
+);
+
+
+INSERT INTO expenses
+VALUES("soap",50.00),
+("tea bag",50.00),
+("coffee powder",50.00),
+("green lable",50.00),
+("sugar",50.00);
+
+
+SELECT * FROM income
+UNION
+SELECT * FROM expenses;
+
+#Note : Same column and data type and it won' allow duplicates 
+
+SELECT first_name,last_name FROM incom
+UNION
+SELECT first_name,last_name FROM expenses;
+
+SELECT * FROM income
+UNION ALL
+SELECT * FROM expenses;
+
+#it will allow duplicates
+
+
+
+
+
+

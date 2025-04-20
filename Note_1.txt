@@ -1,0 +1,114 @@
+
+use sqlapril2025;
+
+CREATE TABLE StudentInfo (
+    PersonID INT,
+    LastName VARCHAR(255),
+    FirstName VARCHAR(255),
+    Address VARCHAR(255),
+    City VARCHAR(255),
+    Fee DECIMAL(5,2),
+    Sex VARCHAR(2)
+);
+
+ALTER TABLE StudentInfo ADD Email varchar(255);
+
+ALTER TABLE StudentInfo CHANGE Email EmailID varchar(255);
+
+ALTER TABLE StudentInfo CHANGE EmailID EmailID varchar(200);
+
+DROP TABLE StudentInfo;
+
+SELECT * FROM StudentInfo;
+
+rename table StudentInfo to StudentInformation;
+
+ALTER table StudentInfo add Sex varchar(15);
+
+alter table StudentInfo rename column Sex to gender;
+
+alter table StudentInfo modify column Sex varchar(100);
+
+
+alter table StudentInfo modify city varchar(100) after LastName;
+
+alter table StudentInfo modify City varchar(100)  first;
+
+select * from StudentInfo;
+
+SELECT * FROM StudentInfo WHERE Fee >=200;
+
+SELECT * FROM StudentInfo WHERE Fee <200;
+
+ # Giving Syntax error need to check and update
+ 
+SELECT * FROM StudentInfo WHERE Fee =!200;
+
+SELECT * FROM StudentInfo WHERE City ='Madurai';
+
+SELECT PersonID,LastName,FirstName FROM StudentInfo WHERE City IS NOT NULL;
+
+SELECT PersonID,LastName,FirstName FROM StudentInfo WHERE City IS  NULL;
+
+SELECT * FROM StudentInfo
+WHERE City IN ('Madurai', 'Banglore');
+
+SELECT * FROM  StudentInfo 
+WHERE FirstName IN ('E','M');
+
+SELECT * FROM StudentInfo
+WHERE City = 'Madurai' OR City = 'Chennai';
+
+SELECT * FROM StudentInfo
+WHERE City ='Chennai' AND Fee =100.00;
+
+SELECT * FROM StudentInfo
+WHERE FEE NOT BETWEEN 100.00 AND 700.00;
+
+SELECT * FROM StudentInfo
+WHERE FEE BETWEEN 100.00 AND 700.00;
+
+#to drop a column 
+
+ALTER TABLE StudentInfo DROP COLUMN Sex;
+
+
+INSERT INTO StudentInfo (PersonID, LastName, FirstName, Address, City, Fee, Sex)
+VALUES ('1', 'Kanna', 'E', 'No 3/44b', 'Chennai', 100.00,'M');
+
+INSERT INTO StudentInfo 
+VALUES ('2', 'Hari', 'R', 'No 4/44b', 'Madurai', '200.00','M');
+
+INSERT INTO StudentInfo
+(PersonID, LastName, city, FirstName, Address, Fee)
+VALUES 
+('4', 'Kannathasan', 'Chennai', 'F', 'Testing', '700.00'),
+('5', 'KannathasanElangovan', 'Chennai', 'FIR', 'QA', '800.00');
+
+INSERT INTO StudentInfo (PersonID, LastName, FirstName, Address, Sex)
+VALUES ('3', 'Anu', 'R', 'No 5/44b','F');
+
+Update StudentInfo set city ='Namakkal' where PersonID =3;
+
+UPDATE studentInfo set Fee = 500.00, FirstName='Ramu' where PersonID = 2;
+
+UPDATE studentInfo set Fee = 300.00, city='Andra' where PersonID = 3;
+
+UPDATE studentInfo set FirstName = NULL where PersonID = 3;
+
+
+DELETE from studentInfo where FirstName = 'FIR';
+
+# To work with Update we need to run the following command and then execute the update commands
+
+SET SQL_SAFE_UPDATES = 0;
+
+SET SQL_SAFE_UPDATES = 1;
+
+
+select * from StudentInfo;
+
+DROP TABLE StudentInfo;
+
+TRUNCATE TABLE StudentInfo;
+

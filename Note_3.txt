@@ -1,0 +1,29 @@
+
+  
+  
+  
+ 
+
+
+  
+  
+ 
+-- select the unique ages from the Customers table
+
+SELECT DISTINCT age
+FROM Customers;
+
+SELECT first_name, age
+FROM Customers
+LIMIT 2;
+
+-- LIMIT 2 selects two results
+-- OFFSET 3 excludes the first three results
+
+SELECT first_name, last_name
+FROM Customers
+LIMIT 2 OFFSET 3;
+
+#https://www.programiz.com/sql/wildcards
+
+

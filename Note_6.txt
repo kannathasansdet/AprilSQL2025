@@ -1,0 +1,423 @@
+CREATE DATABASE SQLOPTIMIZATION;
+
+USE SQLOPTIMIZATION;
+
+CREATE TABLE Restaurants (
+    id INT  PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    location VARCHAR(100) NOT NULL
+);
+
+
+INSERT INTO Restaurants (id, name, location) VALUES
+(1, 'ABC Bistro', 'New York'),
+(2, 'The Foodie', 'Los Angeles'),
+(3, 'Tasty Treat', 'Chicago');
+
+CREATE TABLE Orders (
+    order_id INT PRIMARY KEY,
+    restaurant_id INT NOT NULL,
+    order_date DATE NOT NULL
+);
+
+INSERT INTO Orders (order_id,restaurant_id, order_date) VALUES
+(1, 1, '2023-01-01'),
+(2, 1, '2023-01-02'),
+(3, 2, '2023-01-05'),
+(4, 4, '2023-01-07'); 
+
+
+#JOIN
+----
+select r.name, r.location
+from Restaurants r
+inner join orders o on r.id = o.restaurant_id;
+
+select 
+r.name as restaurant_name,
+o.order_date 
+from Restaurants r
+left join orders o on r.id = o.restaurant_id;
+
+select 
+r.name as restaurant_name,
+o.order_date 
+from Restaurants r
+right join orders o on r.id = o.restaurant_id;
+
+select * from Restaurants;
+
+select * from orders;
+
+DROP TABLE IF EXISTS customers;
+
+CREATE TABLE customers (
+    customer_id INT AUTO_INCREMENT PRIMARY KEY,
+    first_name  VARCHAR(50) NOT NULL,
+    last_name   VARCHAR(50) NOT NULL,
+    email       VARCHAR(100) NOT NULL,
+    city        VARCHAR(100) NOT NULL
+);
+
+CREATE INDEX idx_email ON customers (email);
+
+INSERT INTO customers (first_name, last_name, email, city)
+VALUES
+('John', 'Doe', 'john@example.com', 'New York'),
+('Jane', 'Smith', 'jane.smith@example.com', 'Los Angeles'),
+('Michael', 'Brown', 'michael.brown@example.com', 'Chicago'),
+('Emily', 'Johnson', 'emily.johnson@example.com', 'Houston'),
+('Robert', 'Green', 'robert.green@example.com', 'Phoenix');
+
+EXPLAIN
+SELECT *
+FROM customers
+WHERE email = 'john@example.com';
+
+EXPLAIN ANALYZE
+SELECT *
+FROM customers
+WHERE email = 'john@example.com';
+
+EXPLAIN FORMAT=JSON
+SELECT *
+FROM customers
+WHERE email = 'john@example.com';
+
+select * from customers;
+
+select * from customers where email='john@example.com' ;
+
+#Range
+-----
+CREATE TABLE orders_table (
+    order_id   INT AUTO_INCREMENT ,
+    order_date DATE NOT NULL, 
+    customer_name VARCHAR(50),
+    amount     DECIMAL(10,2),
+PRIMARY KEY(order_id, order_date)
+)
+PARTITION BY RANGE (YEAR(order_date)) (
+    PARTITION p_before_2020 VALUES LESS THAN (2020),
+    PARTITION p_2020       VALUES LESS THAN (2021),
+    PARTITION p_2021       VALUES LESS THAN (2022),
+    PARTITION p_2022       VALUES LESS THAN (2023),
+    PARTITION p_future     VALUES LESS THAN MAXVALUE
+);
+
+ALTER TABLE orders_table ADD PARTITION (PARTITION p_2024 VALUES LESS THAN (2024));
+
+EXPLAIN
+SELECT *
+FROM orders_table;
+
+INSERT INTO orders_table (order_date, customer_name, amount)
+VALUES
+('2019-05-10', 'Alice', 100.00),
+('2020-01-15', 'Bob', 200.50),
+('2020-12-01', 'Charlie', 300.00),
+('2021-07-20', 'Diana', 150.75),
+('2022-03-02', 'Edward', 500.00),
+('2025-06-18', 'FutureMan', 9999.99);
+
+
+SELECT *
+FROM orders_table;
+
+
+SELECT 
+    PARTITION_NAME,
+    PARTITION_METHOD,
+    PARTITION_EXPRESSION,
+    SUBPARTITION_METHOD,
+    SUBPARTITION_EXPRESSION
+FROM information_schema.PARTITIONS
+WHERE TABLE_SCHEMA = 'SQLOPTIMIZATION'
+  AND TABLE_NAME   = 'orders_table';
+
+show create table orders_table;
+
+explain FORMAT=JSON
+select * from orders_table where order_date='2021-07-20';
+
+CREATE TABLE employees (
+    employee_id INT AUTO_INCREMENT,
+    first_name  VARCHAR(50),
+    last_name   VARCHAR(50),
+    department  VARCHAR(50),
+    primary key (employee_id,department)
+)
+PARTITION BY LIST COLUMNS (department) (
+    PARTITION p_sales       VALUES IN ('Sales'),
+    PARTITION p_hr          VALUES IN ('HR'),
+    PARTITION p_engineering VALUES IN ('Engineering', 'DevOps'),
+    PARTITION p_other       VALUES IN ('Finance', 'Marketing', 'Operations')
+);
+
+INSERT INTO employees (first_name, last_name, department)
+VALUES
+('Alice', 'Smith', 'Sales'),
+('Bob', 'Johnson', 'HR'),
+('Charlie', 'Lee', 'Engineering'),
+('Diana', 'Lopez', 'DevOps'),
+('Eve', 'Turner', 'Marketing');
+
+select * from employees;
+
+explain FORMAT=JSON
+select * from employees where department IN ('Sales','HR');
+
+CREATE TABLE sensor_data (
+    sensor_id     INT NOT NULL,
+    reading_time  DATETIME NOT NULL,
+    reading_value DECIMAL(10,2),
+    PRIMARY KEY (sensor_id, reading_time)
+)
+PARTITION BY HASH(sensor_id)
+PARTITIONS 2;
+
+INSERT INTO sensor_data (sensor_id, reading_time, reading_value)
+VALUES
+(101, '2025-01-01 10:00:00', 23.50),
+(102, '2025-01-01 10:05:00', 24.10),
+(103, '2025-01-01 10:10:00', 22.75),
+(104, '2025-01-01 10:15:00', 25.00),
+(105, '2025-01-01 10:20:00', 20.00),
+(106, '2025-01-01 10:25:00', 21.60);
+
+101 % 2 = reminder  / quot
+100 % 2 = 
+
+p0 p1
+      101
+102   103
+104   105
+106
+
+explain format=json
+select * from sensor_data where sensor_id=103;
+
+
+-- Create the Employees table
+CREATE TABLE Employees_Table (
+    EmployeeID INT PRIMARY KEY,
+    FirstName  VARCHAR(50),
+    LastName   VARCHAR(50),
+    Salary     DECIMAL(10,2),
+    Department VARCHAR(50)
+);
+
+-- Insert sample data into the Employees table
+INSERT INTO Employees_Table (EmployeeID, FirstName, LastName, Salary, Department)
+VALUES
+    (1, 'Alice', 'Johnson', 55000.00, 'Sales'),
+    (2, 'Bob',   'Smith',   60000.00, 'IT'),
+    (3, 'Carol', 'Davis',   52000.00, 'Sales'),
+    (4, 'Dave',  'Wilson',  58000.00, 'HR');
+
+select * from Employees_Table;
+
+CREATE VIEW SalesEmployees AS
+
+SELECT EmployeeID, FirstName, LastName, Salary
+FROM Employees_Table
+WHERE Department = 'Sales';
+
+select * from SalesEmployees;
+
+DROP TABLE IF EXISTS regex_samples;
+
+CREATE TABLE regex_samples (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    sample_text VARCHAR(100)
+);
+
+
+INSERT INTO regex_samples (sample_text) VALUES 
+('apple'),         -- id=1
+('Banana'),        -- id=2 (note the capital B)
+('cherry'),        -- id=3
+('date'),          -- id=4
+('elderberry'),    -- id=5
+('fig'),           -- id=6
+('grape'),         -- id=7
+('honeydew'),      -- id=8
+('running'),       -- id=9 (ends with "ing")
+('123abc');        -- id=10 (starts with digits)
+
+
+Example 1: Match Strings That Start with “a”
+
+SELECT * 
+FROM regex_samples
+WHERE sample_text REGEXP '^a';
+
+
+Example 2: Match Strings That End with “e”
+SELECT * 
+FROM regex_samples
+WHERE sample_text REGEXP 'e$';
+
+
+Example 3: Match Strings That Start with a Digit
+
+SELECT * 
+FROM regex_samples
+WHERE sample_text REGEXP '^[0-9]';
+
+
+Example 4: Match Strings Ending with “ing”
+SELECT * 
+FROM regex_samples
+WHERE sample_text REGEXP 'ing$';
+
+Example 5: Match Strings with Consecutive Repeated Characters
+SELECT * 
+FROM regex_samples
+WHERE sample_text REGEXP '(.)\\1';
+
+
+Example 6: Match Strings That Contain Only Letters
+
+SELECT * 
+FROM regex_samples
+WHERE sample_text REGEXP '^[A-Za-z]+$';
+
+
+Example 7: Match Strings with Exactly 5 Characters
+
+SELECT * 
+FROM regex_samples
+WHERE sample_text REGEXP '^.{5}$';
+
+
+Example 8: Match Strings Containing an Uppercase Letter (Case‑Sensitive) -- this may not work in some versions
+SELECT * 
+FROM regex_samples
+WHERE sample_text REGEXP BINARY '[A-Z]';
+
+
+Example 9: Match Only “apple” or “banana” Exactly
+SELECT * 
+FROM regex_samples
+WHERE sample_text REGEXP '^(apple|banana)$';
+
+
+Example 10: Match Strings Starting with 3 Digits Followed by Letters
+
+SELECT * 
+FROM regex_samples
+WHERE sample_text REGEXP '^[0-9]{3}[A-Za-z]+$';
+
+
+
+CREATE TABLE demo_data (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    full_name VARCHAR(50),
+    phone VARCHAR(25),
+    email VARCHAR(100),
+    date_col VARCHAR(10),   -- Storing as VARCHAR for the demo
+    status VARCHAR(20),
+    sku VARCHAR(20),
+    username VARCHAR(30),
+    notes VARCHAR(100)
+);
+
+
+INSERT INTO demo_data (full_name, phone, email, date_col, status, sku, username, notes)
+VALUES
+-- 1
+('John Smith', 
+ '123-456-7890', 
+ 'john@example.com', 
+ '2025-02-07', 
+ 'pending', 
+ 'ABCD', 
+ 'johnsmith', 
+ 'Ships to CA'),
+
+-- 2
+('Alice Johnson', 
+ '(987) 654-3210', 
+ 'alice@@example.net', 
+ '2025-02-07', 
+ 'inactive', 
+ 'SKU-123', 
+ 'alice', 
+ 'NY location'),
+
+-- 3
+('Bob Williams', 
+ '+1-555-123-4567', 
+ 'bob@sample.org', 
+ '20250207', 
+ 'complete', 
+ '1SKU', 
+ 'bob123', 
+ 'Shipping to CA'),
+
+-- 4
+('Mary 1 White', 
+ '(123) 123-4567', 
+ 'mary123@example.com', 
+ '2025-13-31', 
+ 'PENDING', 
+ 'abc-999', 
+ 'mary_white', 
+ 'Something about CA or'),
+
+-- 5
+('Mark-Spencer', 
+ '1234567890', 
+ 'mark@example.com', 
+ '2024-11-02', 
+ 'active', 
+ 'SKU-9999', 
+ 'mark', 
+ 'Random note'),
+
+-- 6
+('Jane O''Connor',   -- Note the doubled apostrophe for SQL
+ '987-654-3210', 
+ 'jane.o.connor@example.org', 
+ '2024-12-31', 
+ 'inactive', 
+ 'ABCDE', 
+ 'janeO', 
+ 'Contains CA or NY'),
+
+-- 7
+('Invalid Mail', 
+ '000-000-0000', 
+ 'invalid@@example..com', 
+ '2023-01-15', 
+ 'inactive', 
+ 'XYZ000', 
+ 'invalid', 
+ 'Double @ and dots'),
+
+-- 8
+('NoSpacesHere', 
+ '+12-345-678-9012',
+ 'nospaces@example.co',
+ '2025-02-07',
+ 'pending',
+ 'SKU999',
+ 'NoSpaces',
+ 'Ends with .co domain');
+
+select * from demo_data;
+
+1. Matching a Strict Date Format (YYYY-MM-DD)
+
+SELECT *
+FROM demo_data
+WHERE date_col REGEXP '^[0-9]{4}-[0-9]{2}-[0-9]{2}$';
+
+
+2. Matching Names Containing Only Letters and Spaces
+SELECT *
+FROM demo_data
+WHERE full_name REGEXP '^[A-Za-z ]+$';
+
+
