@@ -1,0 +1,96 @@
+drop table Departments;
+
+CREATE TABLE Employees (
+    EmpID INT PRIMARY KEY,
+    EmpName VARCHAR(50),
+    DeptID INT
+);
+
+CREATE TABLE Departments (
+    DeptID INT PRIMARY KEY,
+    DeptName VARCHAR(50)
+);
+
+-- Insert Sample Data
+INSERT INTO Employees (EmpID, EmpName, DeptID) VALUES
+(101, 'Alice', 1),
+(102, 'Bob', 2),
+(103, 'Charlie', 1);
+
+INSERT INTO Departments (DeptID, DeptName) VALUES
+(1, 'HR'),
+(2, 'Finance');
+
+DELIMITER //
+CREATE PROCEDURE GetEmployeesByDept(IN dept_name VARCHAR(50))
+BEGIN
+    SELECT e.EmpID, e.EmpName, d.DeptName
+    FROM Employees e
+    INNER JOIN Departments d ON e.DeptID = d.DeptID
+    WHERE d.DeptName = dept_name;
+END //
+DELIMITER ;
+
+
+CALL GetEmployeesByDept('HR');
+
+DELIMITER //
+CREATE PROCEDURE Factorial(IN num INT, OUT result INT)
+BEGIN
+    DECLARE temp INT;
+    IF num = 1 THEN
+        SET result = 1;
+    ELSE
+        CALL Factorial(num - 1, temp);
+        SET result = num * temp;
+    END IF;
+END //
+DELIMITER ;
+
+SHOW tables;
+
+SET @result = 0;
+CALL Factorial(5, @result); -- Calculates factorial of 5
+SELECT @result; -- Output: 120
+
+
+CREATE TABLE Employees (
+    EmpID INT PRIMARY KEY,
+    EmpName VARCHAR(50),
+    DeptID INT
+);
+
+CREATE TABLE Departments (
+    DeptID INT PRIMARY KEY,
+    DeptName VARCHAR(50)
+);
+
+
+INSERT INTO Employees (EmpID, EmpName, DeptID) VALUES
+(101, 'Alice', 1),
+(102, 'Bob', 2),
+(103, 'Charlie', 1),
+(104, 'Daisy', 3);
+
+INSERT INTO Departments (DeptID, DeptName) VALUES
+(1, 'HR'),
+(2, 'Finance'),
+(3, 'IT');
+
+CREATE VIEW Dept1Employees AS
+SELECT EmpID, EmpName, Salary
+FROM Employees
+WHERE DeptID = 1;
+
+SELECT * FROM Dept1Employees;
+
+UPDATE Dept1Employees
+SET Salary = Salary + 5000
+WHERE EmpName = 'Alice';
+
+SELECT EmpName, Salary
+FROM Dept1Employees
+WHERE Salary > 52000;
+
+
+

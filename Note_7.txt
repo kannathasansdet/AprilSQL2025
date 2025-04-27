@@ -1,0 +1,146 @@
+USE sqlfunctions;
+
+SELECT * FROM fruits;
+
+SELECT * FROM fruits WHERE color='Red';
+
+SELECT  COUNT(color), color FROM fruits
+GROUP BY color;
+
+SELECT  COUNT(color), color FROM fruits
+GROUP BY color
+HAVING color = 'Red';
+
+# SQL CTE (Common Table Expressions)
+
+WITH lessPriceFruits AS (
+    SELECT * 
+    FROM fruits 
+    WHERE price > 50
+)
+SELECT * 
+FROM lessPriceFruits;
+
+WITH lessPriceFruits AS (
+    SELECT * 
+    FROM fruits 
+    WHERE price > 50
+)
+SELECT * 
+FROM lessPriceFruits
+WHERE color='Red';
+
+CREATE TABLE Sales (
+    Product VARCHAR(50),
+    Region VARCHAR(50),
+    Month VARCHAR(10),
+    Sales INT
+);
+
+INSERT INTO Sales (Product, Region, Month, Sales) VALUES
+('Laptop', 'North', 'Jan', 1000),
+('Laptop', 'North', 'Feb', 1200),
+('Laptop', 'South', 'Jan', 1500),
+('Phone', 'North', 'Jan', 800),
+('Phone', 'South', 'Feb', 900);
+
+SELECT Product, Region, Month, SUM(Sales) AS TotalSales
+FROM Sales
+GROUP BY ROLLUP(Product, Region, Month);
+
+CREATE TABLE Orders (
+    Product VARCHAR(50),
+    Region VARCHAR(50),
+    Month VARCHAR(10),
+    Revenue INT
+);
+
+INSERT INTO Orders (Product, Region, Month, Revenue) VALUES
+('Pizza', 'North', 'Jan', 2000),
+('Pizza', 'North', 'Feb', 2500),
+('Pizza', 'South', 'Jan', 3000),
+('Burger', 'North', 'Jan', 1800),
+('Burger', 'South', 'Feb', 2100),
+('Burger', 'South', 'Jan', 2500);
+
+SELECT SUM(Revenue) FROM Orders ;
+
+SELECT Product, Region, SUM(Revenue) AS TotalRevenue
+FROM Orders
+GROUP BY ROLLUP(Product, Region);
+
+Drop table Departments;
+
+-- Parent Table: Departments
+CREATE TABLE Departments (
+    DeptID INT PRIMARY KEY,
+    DeptName VARCHAR(50)
+);
+
+-- Child Table: Employees
+CREATE TABLE Employees (
+    EmpID INT PRIMARY KEY,
+    EmpName VARCHAR(50),
+    DeptID INT,
+    FOREIGN KEY (DeptID) REFERENCES Departments(DeptID) ON DELETE SET NULL
+);
+
+-- Insert into Departments table
+INSERT INTO Departments (DeptID, DeptName) VALUES
+(1, 'HR'),
+(2, 'Finance'),
+(3, 'IT');
+
+-- Insert into Employees table
+INSERT INTO Employees (EmpID, EmpName, DeptID) VALUES
+(101, 'Alice', 1),
+(102, 'Bob', 2),
+(103, 'Charlie', 3);
+
+-- Delete the Finance department (DeptID = 2)
+DELETE FROM Departments WHERE DeptID = 2;
+
+-- Parent Table: Departments
+CREATE TABLE Departments (
+    DeptID INT PRIMARY KEY,
+    DeptName VARCHAR(50)
+);
+
+-- Child Table: Employees
+CREATE TABLE Employees (
+    EmpID INT PRIMARY KEY,
+    EmpName VARCHAR(50),
+    DeptID INT,
+    FOREIGN KEY (DeptID) REFERENCES Departments(DeptID) ON DELETE CASCADE
+);
+
+-- Insert into Departments table
+INSERT INTO Departments (DeptID, DeptName) VALUES
+(1, 'HR'),
+(2, 'Finance'),
+(3, 'IT');
+
+-- Insert into Employees table
+INSERT INTO Employees (EmpID, EmpName, DeptID) VALUES
+(101, 'Alice', 1),
+(102, 'Bob', 2),
+(103, 'Charlie', 3);
+
+
+-- Delete the HR department
+DELETE FROM Departments WHERE DeptID = 1;
+
+SELECT * FROM Departments;
+
+SELECT * FROM employees;
+
+START TRANSACTION;
+
+UPDATE Departments
+SET DeptName = 'IT'
+WHERE DeptId = 3;
+
+COMMIT;
+
+rollback;
+
